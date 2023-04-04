@@ -1,8 +1,9 @@
 const User = require("../models/User");
-const { StatusCode } = require("http-status-codes");
+const { StatusCodes } = require("http-status-codes");
+const { BadRequestError, NotFoundError } = require("../errors");
 const CustomerError = require("../errors");
 const jwt = require("jsonwebtoken");
-const { createJWT, attachCookiesToResponse } = require("../utils");
+const { attachCookiesToResponse } = require("../utils");
 
 const register = async (req, res) => {
   const { name, email, password } = req.body;
@@ -22,21 +23,38 @@ const register = async (req, res) => {
     role: users.role,
   };
 
-  // const token = createJWT({ payload: tokenPayload });
-  // const oneDay = 1000 * 60 * 60 * 24;
-  // res.cookie("token", token, {
-  //   httpOnly: true,
-  //   expires: new Date(Date.now() + oneDay),
-  // });
-  await attachCookiesToResponse({ res, tokenPayload });
+  attachCookiesToResponse({ res, tokenPayload });
 
   res.status("200").json({ success: true, data: users });
 };
 const login = async (req, res) => {
-  res.send("login");
+  const { email, password } = req.body;
+  if (!email || !password) {
+    throw new BadRequestError("Please provide email and password");
+  }
+  const user = await User.findOne({ email });
+  if (!user) {
+    throw new NotFoundError("User not found");
+  }
+  const isPasswordMatch = await user.comparePassword(password);
+  if (!isPasswordMatch) {
+    throw new BadRequestError("Invalid credentials");
+  }
+  const tokenPayload = {
+    name: user.name,
+    userId: user._id,
+    role: user.role,
+  };
+  attachCookiesToResponse({ res, tokenPayload });
+
+  res.status("200").json({ success: true, data: user });
 };
 const logout = async (req, res) => {
-  res.send("logout");
+  res.cookie("token", "logout", {
+    httpOnly: true,
+    expires: new Date(Date.now()),
+  });
+  res.status(StatusCodes.OK).json({ success: true, msg: "logout" });
 };
 
 module.exports = { register, login, logout };
