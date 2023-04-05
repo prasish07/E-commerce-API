@@ -1,5 +1,6 @@
 const User = require("../models/User");
 const customeError = require("../errors");
+const { createTokenUser, attachCookiesToResponse } = require("../utils");
 const getAllUsers = async (req, res) => {
   console.log(req.user);
   const users = await User.find({ role: "user" }).select("-password");
@@ -27,9 +28,23 @@ const showCurrentUser = async (req, res) => {
 };
 
 const updateUser = async (req, res) => {
+  const { name, email } = req.body;
+  if (!name || !email)
+    throw new customeError.BadRequestError("Please provide name and email");
+  const user = await User.findOneAndUpdate(
+    { _id: req.user.userId },
+    { email, name },
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+  const tokenPayload = createTokenUser(user);
+  attachCookiesToResponse({ res, tokenPayload });
+
   res.status(200).json({
     success: true,
-    msg: req.body,
+    msg: user,
   });
 };
 

@@ -3,7 +3,7 @@ const { StatusCodes } = require("http-status-codes");
 const { BadRequestError, NotFoundError } = require("../errors");
 const CustomerError = require("../errors");
 const jwt = require("jsonwebtoken");
-const { attachCookiesToResponse } = require("../utils");
+const { attachCookiesToResponse, createTokenUser } = require("../utils");
 
 const register = async (req, res) => {
   const { name, email, password } = req.body;
@@ -17,11 +17,8 @@ const register = async (req, res) => {
 
   const users = await User.create({ name, email, password, role });
 
-  const tokenPayload = {
-    name: users.name,
-    userId: users._id,
-    role: users.role,
-  };
+  const tokenPayload = createTokenUser(users);
+  console.log(tokenPayload);
 
   attachCookiesToResponse({ res, tokenPayload });
 

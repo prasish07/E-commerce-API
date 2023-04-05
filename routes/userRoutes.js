@@ -13,7 +13,7 @@ const {
 router.route("/").get(auth, authorizePermission("admin", "owner"), getAllUsers);
 
 router.route("/showMe").get(auth, showCurrentUser);
-router.route("/updateUser").patch(updateUser);
+router.route("/updateUser").patch(auth, updateUser);
 router.route("/updateUserPassword").patch(auth, updateUserPassword);
 
 router.route("/:id").get(getSingleUser);
