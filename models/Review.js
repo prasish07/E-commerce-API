@@ -19,12 +19,12 @@ const ReviewScheme = new mongoose.Schema(
       required: [true, "comment field is empty"],
     },
     user: {
-      type: mongoose.Types.ObjectId,
+      type: mongoose.Schema.ObjectId,
       ref: "User",
       required: true,
     },
     product: {
-      type: mongoose.Types.ObjectId,
+      type: mongoose.Schema.ObjectId,
       ref: "Product",
       required: true,
     },
