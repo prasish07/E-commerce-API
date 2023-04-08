@@ -19,10 +19,15 @@ const createReview = async (req, res) => {
       "Already submitted review for this product!!"
     );
 
-  const reviews = await Review.create({
+  //   const reviews = await Review.create({
+  //     ...req.body,
+  //     user: req.user.userId,
+  //   });
+  const reviews = new Review({
     ...req.body,
     user: req.user.userId,
   });
+  await reviews.save();
   res.status(StatusCodes.CREATED).json({ status: "success", review: reviews });
 };
 const getAllReview = async (req, res) => {
@@ -40,20 +45,20 @@ const updateReview = async (req, res) => {
       `No review found by the name ${req.params.id}`
     );
   checkPermission(req.user, userIdInProduct.user);
-  const review = await Review.findOneAndUpdate(
-    { _id: req.params.id },
-    { ...req.body },
-    {
-      runValidators: true,
-      new: true,
-    }
-  );
-  //   const { rating, title, comment } = req.body;
-  //   userIdInProduct.rating = rating;
-  //   userIdInProduct.title = title;
-  //   userIdInProduct.comment = comment;
-  //   await userIdInProduct.save();
-  res.status(200).json({ msg: "success", review: review });
+  //   const review = await Review.findOneAndUpdate(
+  // { _id: req.params.id },
+  // { ...req.body },
+  // {
+  //   runValidators: true,
+  //   new: true,
+  // }
+  //   );
+  const { rating, title, comment } = req.body;
+  userIdInProduct.rating = rating;
+  userIdInProduct.title = title;
+  userIdInProduct.comment = comment;
+  await userIdInProduct.save();
+  res.status(200).json({ msg: "success", review: userIdInProduct });
 };
 const getSingleReview = async (req, res) => {
   const review = await Review.findById(req.params.id);
