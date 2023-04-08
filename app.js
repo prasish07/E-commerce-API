@@ -11,6 +11,7 @@ const productRouter = require("./routes/productRoutes");
 const { auth, authorizePermission } = require("./middleware/authentication");
 const fileUpload = require("express-fileupload");
 const reviewRoute = require("./routes/reviewRoutes");
+const orderRoute = require("./routes/orderRoutes");
 
 const connectDb = require("./db/connect");
 
@@ -36,6 +37,7 @@ app.use("/api/v1/auth", authrouter);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/products", productRouter);
 app.use("/api/v1/review", reviewRoute);
+app.use("/api/v1/orders", orderRoute);
 
 // middleware
 app.use(notFoundMiddleware);
