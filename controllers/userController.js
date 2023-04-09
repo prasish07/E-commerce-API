@@ -43,7 +43,7 @@ const updateUser = async (req, res) => {
   //   { email, name },
   //   {
   //     new: true,
-  //     runValidators: true,
+  //     runValida rs: true,
   //   }
   // );
   const user = await User.findById(req.user.userId);
